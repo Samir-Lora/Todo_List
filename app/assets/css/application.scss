@@ -1,0 +1,77 @@
+@import "~bootstrap/scss/bootstrap.scss";
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+
+// This is just some CSS for the welcome home landing page, feel free to 
+// remove it.
+
+
+.nav{
+    height: 100px;
+    align-items: center;
+    background: #73C3DB;
+}
+
+.h{
+    font-size: 30px;
+    font-weight: 500;
+}
+
+
+.incomplete{
+    margin-top: 15px;
+    margin-bottom: 1px;
+    font-size: 18px;
+}
+
+.textincompleted{
+    font-size: 16px;
+    font-weight: lighter;
+    margin-right: 30px;
+}
+.textcompleted{
+    font-size: 16px;
+    font-weight: lighter;
+}
+
+.addbtn{
+    background: #73C3DB;
+    color: white;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    border-radius: 2px;
+}
+
+.addbtn2{
+    background: #73C3DB;
+    color: white;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    border-radius: 4px ;
+}
+
+.thead{
+    background-color: #194767;
+}
+
+.tasktext{
+    color: #73C3DB;
+
+}
+
+#idb{
+    margin-left: 20px;
+}
+
+.body{
+    height: 800px;
+}
+
+.d{
+    display: none;
+}

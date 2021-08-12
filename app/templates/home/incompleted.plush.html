@@ -1,0 +1,97 @@
+<section>
+    <nav class="navbar-light text-white nav">
+        <div class="nav-item d-flex">
+            <a href="/task" class="navbar-brand text-white h ml-5 mr-5">ToDo list</a>
+            <div class="ml-3 border-left border-white"></div>
+        </div>
+        <div class="d-flex flex-column ml-5">
+            <p class="incomplete">Task <%= len %></p>
+            <p class="font-weight-ligh date" id="date">Date</p>
+        </div>
+
+        <div class="d-flex ml-auto mr-5">
+            <div class="nav-item align-items-center"><a href="task?complete=false" id="textincompleted"  class="text-white textincompleted">Incompleted Task</a>
+            </div>
+            <div class="nav-item"><a href="task?complete=true" class="text-white textcompleted" id="com">Completed Task</a></div>
+        </div>
+    </nav>
+</section> 
+
+<section>
+    <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight">
+        <button type="button" id="idn1" class="btn addbtn">Add Task</button>
+    </div>
+</section>
+
+<section>
+    <div class="mx-5">
+        <table class="table table-hover">
+            <thead class="thead text-white">
+                <tr>
+                    <th scope="col" class="col-1 p-0"></th>
+                    <th scope="col">Task</th>
+                    <th class="text-center" scope="col">Complete by</th>
+                    <th class="pl-4" id="action" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            <%= for(task) in tasks { %>
+                <tr>
+                    <th class="text-center" scope="row">
+                    <%= form_for(task, {action: taskUpdatecompleteTaskIDPath({task_ID: task.ID}), method: "PUT", class: "form"}) { %>
+                        <%= if (task.Complete == false) { %>
+                            <button type="submit" data-method="PUT" class="btn my-0 py-0">
+                            <i class="far fa-check-circle"></i>
+                            </button>
+                    <% } else if (task.Complete == true ) { %>
+                            <button type="submit" data-method="PUT" class="btn text-danger">
+                            <i class="far fa-times-circle"></i>
+                            </button>
+                        <% } %>
+                    <% } %>                    
+                    </th>
+                        <td class="col-5 tasktext"><a href="/task/showtask/<%= task.ID %>" ><%= task.Task %></a></td>
+                        <td class="text-center" ><%= Date(task.Date) %></td>
+                    <td >
+                    <div class="d-flex pl-3">
+
+                    <%= if (task.Complete == false) { %>
+                        <a class=" text-dark" href="/task/edit/<%= task.ID %>" ><i class="fas fa-pencil-alt"></i></a>
+                        <% } %>                    
+                    <a class="<%= task.ID %>"  id="idb" data-toggle="modal" data-target="#delete" ><i class="far fa-trash-alt text-danger" ></i></a>
+                    </div>
+
+                    </td>
+                </tr>
+            </tbody>
+            <% } %>
+        </table>
+    </div>
+
+</section>
+
+<section>
+<a data-toggle="modal" data-target="#delete"></a>
+<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      <h5 class="modal-title">Delete Task</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      Are you sure you want to delete this task?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <label id="deleteb"></label>
+      </div>
+
+    </div>
+  </div>
+</div>
+</section>
+
+
