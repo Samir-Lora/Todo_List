@@ -35,26 +35,26 @@ type Tasks []Task
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 
-func (i *Task) Validate() *validate.Errors {
+func (c *Task) Validate() *validate.Errors {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: i.Task, Name: "Task"},
-		&validators.StringIsPresent{Field: i.Description, Name: "Description"},
-		&validators.TimeIsPresent{Field: i.Date, Name: "Date"},
+		&validators.StringIsPresent{Field: c.Task, Name: "Task"},
+		&validators.StringIsPresent{Field: c.Description, Name: "Description"},
+		&validators.TimeIsPresent{Field: c.Date, Name: "Date"},
 	)
 }
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
-func (i *Task) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
+func (c *Task) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
 }
 
 // ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
 // This method is not required and may be deleted.
-func (i *Task) ValidateUpdate() *validate.Errors {
+func (c *Task) ValidateUpdate() *validate.Errors {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: i.Task, Name: "Task"},
-		&validators.StringIsPresent{Field: i.Description, Name: "Description"},
-		&validators.TimeIsPresent{Field: i.Date, Name: "Date"},
+		&validators.StringIsPresent{Field: c.Task, Name: "Task"},
+		&validators.StringIsPresent{Field: c.Description, Name: "Description"},
+		&validators.TimeIsPresent{Field: c.Date, Name: "Date", Message: "Date is no valid"},
 	)
 }

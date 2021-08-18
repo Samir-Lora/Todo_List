@@ -1,8 +1,0 @@
-create_table("completeds") {
-	t.Column("id", "uuid", {primary: true})
-	t.Column("task", "string", {})
-	t.Column("description", "text", {})
-	t.Column("date", "timestamp", {})
-	t.Column("enable", "bool", {})
-	t.Timestamps()
-}
