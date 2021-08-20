@@ -7,11 +7,11 @@ import (
 )
 
 type ModelSuite struct {
-	*suite.Model
+	suite.Model
 }
 
-func Test_ModelSuite(t *testing.T) {
+func Test_Model(t *testing.T) {
 	suite.Run(t, &ModelSuite{
-		Model: suite.NewModel(),
+		Model: *suite.NewModel(),
 	})
 }

@@ -6,12 +6,12 @@
                 <div class="ml-3 border-left border-white"></div>
             </div>
             <div class="d-flex flex-column ml-5">
-            <p class="incomplete">Task <%= len %></p>
+            <p class="incomplete"> <%= len %> Incompleted Tasks</p>
             <p class="font-weight-ligh date" id="date"><%= datenow %></p>
             </div>
 
             <div class="d-flex ml-auto mr-5">
-            <div class="nav-item align-items-center"><a href="/complete=false"  class="text-white textincompleted">Incompleted Task</a>
+            <div class="nav-item align-items-center"><a href="/?complete=false"  class="text-white textincompleted">Incompleted Task</a>
             </div>
             <div class="nav-item"><a href="/?complete=true" class="text-white textcompleted" id="com">Completed Task</a></div>
         </div>

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/validate/v3"
 	"github.com/gobuffalo/validate/v3/validators"
 	"github.com/gofrs/uuid"
@@ -37,24 +36,28 @@ type Tasks []Task
 
 func (c *Task) Validate() *validate.Errors {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: c.Task, Name: "Task"},
-		&validators.StringIsPresent{Field: c.Description, Name: "Description"},
-		&validators.TimeIsPresent{Field: c.Date, Name: "Date"},
+		&validators.StringIsPresent{Field: c.Task, Name: "Task", Message: "Task name cannot is empty, please write a title"},
+		&validators.StringIsPresent{Field: c.Description, Name: "Description", Message: "Description cannot is empty, please write something"},
+		&validators.TimeIsPresent{Field: c.Date, Name: "Date", Message: "Date is no valid"},
 	)
 }
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
-func (c *Task) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
+func (c *Task) ValidateCreate() *validate.Errors {
+	return validate.Validate(
+		&validators.StringIsPresent{Field: c.Task, Name: "Task", Message: "Task name cannot is empty, please write a title"},
+		&validators.StringIsPresent{Field: c.Description, Name: "Description", Message: "Description cannot is empty, please write something"},
+		&validators.TimeIsPresent{Field: c.Date, Name: "Date", Message: "Date is no valid"},
+	)
 }
 
 // ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
 // This method is not required and may be deleted.
 func (c *Task) ValidateUpdate() *validate.Errors {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: c.Task, Name: "Task"},
-		&validators.StringIsPresent{Field: c.Description, Name: "Description"},
+		&validators.StringIsPresent{Field: c.Task, Name: "Task", Message: "Task name cannot is empty, please write a title"},
+		&validators.StringIsPresent{Field: c.Description, Name: "Description", Message: "Description cannot is empty, please write something"},
 		&validators.TimeIsPresent{Field: c.Date, Name: "Date", Message: "Date is no valid"},
 	)
 }

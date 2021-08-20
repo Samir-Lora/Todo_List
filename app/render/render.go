@@ -28,6 +28,7 @@ var Helpers = map[string]interface{}{
 	"Date":           Date,
 	"Datecompleted":  Datecompleted,
 	"SelectedFilter": SelectedFilter,
+	"Button":         Button,
 }
 
 func Date(value time.Time) string {
@@ -49,6 +50,16 @@ func SelectedFilter(completed string, expectedValue string) string {
 	var value string
 	if completed == expectedValue {
 		value = "font-weight-lighter"
+		fmt.Println(completed, "   ", expectedValue)
+	}
+	return value
+
+}
+
+func Button(completed string, expectedValue string) string {
+	var value string
+	if completed == expectedValue {
+		value = "d"
 		fmt.Println(completed, "   ", expectedValue)
 	}
 	return value

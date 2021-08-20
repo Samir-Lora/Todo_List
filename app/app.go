@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	root  *buffalo.App
+	root *buffalo.App
 )
 
-// App creates a new application with default settings and reading 
+// App creates a new application with default settings and reading
 // GO_ENV. It calls setRoutes to setup the routes for the app that's being
 // created before returning it
 func New() *buffalo.App {

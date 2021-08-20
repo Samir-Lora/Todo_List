@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 	"todo_list/app/models"
@@ -42,11 +41,11 @@ func Createtask(c buffalo.Context) error {
 		return err
 	}
 
-	verrs := tasks.Validate()
+	verrs := tasks.ValidateCreate()
 	if verrs.HasAny() {
 		c.Set("errors", verrs)
 		c.Set("tasks", tasks)
-		return c.Render(http.StatusOK, r.HTML("tasks/new.plush.html"))
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("tasks/new.plush.html"))
 	}
 
 	if err := tx.Create(&tasks); err != nil {
@@ -112,7 +111,6 @@ func Updatetask(c buffalo.Context) error {
 func Delete(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	taskid := c.Param("task_id")
-	fmt.Print("hola")
 	taskid2, _ := uuid.FromString(taskid)
 	if taskid == "" {
 		return c.Redirect(http.StatusNotFound, "/")
