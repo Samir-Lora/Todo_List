@@ -1,7 +1,6 @@
 package render
 
 import (
-	"fmt"
 	"time"
 	base "todo_list"
 
@@ -50,7 +49,6 @@ func SelectedFilter(completed string, expectedValue string) string {
 	var value string
 	if completed == expectedValue {
 		value = "font-weight-lighter"
-		fmt.Println(completed, "   ", expectedValue)
 	}
 	return value
 
@@ -60,7 +58,6 @@ func Button(completed string, expectedValue string) string {
 	var value string
 	if completed == expectedValue {
 		value = "d"
-		fmt.Println(completed, "   ", expectedValue)
 	}
 	return value
 
