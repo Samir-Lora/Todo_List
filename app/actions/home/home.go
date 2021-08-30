@@ -1,8 +1,8 @@
 package home
 
 import (
-	"todo_list/app/render"
 	"net/http"
+	"todo_list/app/render"
 
 	"github.com/gobuffalo/buffalo"
 )

@@ -10,16 +10,19 @@
         </div>
 
         <div class="d-flex ml-auto mr-5">
-            <div class="nav-item align-items-center"><a href="?complete=false" class="btn text-light <%=  SelectedFilter(params["complete"], "true")  %>"> Incomplete Task</a>
+            <div class="nav-item align-items-center"><a href="?complete=false" class="btn text-light <%=  SelectedFilter(params["complete"], "true")  %>"> Incompleted Task</a>
             </div>
             <div class="nav-item"><a href="?complete=true" class="btn text-light <%=  SelectedFilter(params["complete"], "false")  %>">Completed Task</a></div>
+            <div class="nav-item"><a href="/users" class="btn text-light <%=  SelectedFilter(params["complete"], "false")  %>">Users</a></div>
         </div>
     </nav>
 </section> 
 
 <section>
-    <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight"><a href="/task/new"">
-        <button type="button" class="btn addbtn <%= Button(params["complete"], "true")  %>">Add Task</button></a>
+    <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight"><a href="/task/new">
+        <button type="button" class="btn addbtn <%= Button(params["complete"], "true")  %>">Add Task</button>
+    </a>
+       <a href="/user/new"> <button type="button" class="btn addbtn mr-3 <%= Button(params["complete"], "true")  %>">Add Users</button></a>
     </div>
 </section>
 

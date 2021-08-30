@@ -7,4 +7,8 @@ $(() => {
     var r = '<a href="/task/delete/' + $(this).attr('data-id') + '" data-method="DELETE" ><button type="button" class="btn btn-primary">Delete</button></a>';
     document.getElementById('deleteb').innerHTML = r;
   });
+  $("body").on("click", '#modaluser', function () {
+    var r = '<a href="/user/delete/' + $(this).attr('data-id') + '" data-method="DELETE" ><button type="button" class="btn btn-primary">Delete</button></a>';
+    document.getElementById('deletebtn').innerHTML = r;
+  });
 });

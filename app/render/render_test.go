@@ -40,7 +40,7 @@ func Test_SelectedFilter(t *testing.T) {
 
 func Test_Button(t *testing.T) {
 	location := render.SelectedFilter("true", "true")
-	if location != "d" {
+	if location == "d" {
 		t.Error("Unconverted, value is : ", location)
 	}
 }

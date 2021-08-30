@@ -1,0 +1,42 @@
+<div class="bg-light body">
+    <section>
+        <nav class="navbar-light text-white nav">
+            <div class="nav-item d-flex">
+                <a href="/" class="navbar-brand text-white h ml-5 mr-5">ToDo list</a>
+                <div class="ml-3 border-left border-white"></div>
+            </div>
+            <div class="d-flex flex-column ml-5">
+            <p class="incomplete"> <%= len %> Incompleted Tasks</p>
+            <p class="font-weight-ligh date" id="date"><%= datenow %></p>
+            </div>
+
+            <div class="d-flex ml-auto mr-5">
+            <div class="nav-item align-items-center"><a href="/?complete=false"  class="text-white textincompleted">Incompleted Task</a>
+            </div>
+            <div class="nav-item"><a href="/?complete=true" class="text-white textcompleted" id="com">Completed Task</a></div>
+            <div class="nav-item"><a href="/users" class="btn text-light">Users</a></div>
+
+        </div>
+        </nav>
+    </section>
+
+    <section>
+        <div class="container bg-white mt-5">
+            <h2 class="ml-4 pt-5">Edit User</h2>
+            <%= form_for(user, {action: editUserUserIDUpdatePath({ user_id: user.ID}) , method: "PUT", class: "form"}) { %>
+                <div class="d-flex mx-4 justify-content-between">
+                    <div class="w-50 mr-3 mt-3"><%= f.InputTag("Name") %></div>
+                    <div class="w-50 mr-3 mt-3"><%= f.InputTag ("LastName") %></div>
+                </div>
+                <div class="mx-4">
+                <%= f.InputTag("Email",{type: "Email"}) %>
+                <div class="d-flex flex-row-reverse">
+                        <input class=" addbtn2 mb-5 ml-3" type="submit" value="Edit task">
+                        <a href="/?complete=false" class="mb-5"> <button type="button" class="btn btn-light">Cancel</button> </a>
+                </div>
+                </div>
+            <% } %>
+        </div>
+    </section>
+</div>
+

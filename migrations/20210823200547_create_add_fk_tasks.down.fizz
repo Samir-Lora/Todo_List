@@ -1,0 +1,2 @@
+drop_foreign_key("tasks", "tasks_id_fk_users_id", {"if_exists": true})
+
