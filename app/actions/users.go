@@ -46,6 +46,7 @@ func CreateUser(c buffalo.Context) error {
 		return c.Render(http.StatusUnprocessableEntity, r.HTML("users/newuser.plush.html"))
 	}
 	user.Rol = "user"
+	user.Active = true
 	fmt.Println(&user.Rol)
 
 	if err := tx.Create(&user); err != nil {

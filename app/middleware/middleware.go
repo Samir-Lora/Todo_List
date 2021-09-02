@@ -74,9 +74,9 @@ func Datenow(next buffalo.Handler) buffalo.Handler {
 func SetCurrentUser(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		if uid := c.Session().Get("current_user_id"); uid != nil {
-			u := &models.User{}
+			u := models.User{}
 			tx := c.Value("tx").(*pop.Connection)
-			err := tx.Find(u, uid)
+			err := tx.Find(&u, uid)
 			if err != nil {
 				return errors.WithStack(err)
 			}
@@ -90,7 +90,6 @@ func SetCurrentUser(next buffalo.Handler) buffalo.Handler {
 func Authorize(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		if uid := c.Session().Get("current_user_id"); uid == nil {
-			fmt.Println(uid)
 			c.Session().Set("redirectURL", c.Request().URL.String())
 
 			err := c.Session().Save()
@@ -101,5 +100,18 @@ func Authorize(next buffalo.Handler) buffalo.Handler {
 			return c.Redirect(302, "/")
 		}
 		return next(c)
+	}
+}
+
+func Authorizeusers(next buffalo.Handler) buffalo.Handler {
+	return func(c buffalo.Context) error {
+		user := c.Value("current_user").(models.User)
+		fmt.Println(user.Rol)
+
+		if user.Rol == "admin" {
+			return next(c)
+		}
+		c.Flash().Add("danger", "You must be authorized to see that page")
+		return c.Redirect(302, "/tasks")
 	}
 }

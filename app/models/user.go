@@ -23,8 +23,9 @@ type User struct {
 	Password             string `json:"-" db:"-"`
 	PasswordConfirmation string `json:"-" db:"-"`
 
-	Active    bool      `json:"active" db:"active"`
-	Rol       string    `json:"rol" db:"rol"`
+	Active bool   `json:"active" db:"active"`
+	Rol    string `json:"rol" db:"rol"`
+
 	Tasks     Tasks     `has_many:"tasks"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`

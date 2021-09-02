@@ -22,7 +22,9 @@ func TaskList(c buffalo.Context) error {
 	if err := q.Order("date asc").All(&tasks); err != nil {
 		return err
 	}
+	user := c.Value("current_user").(models.User)
 
+	c.Set("user", user)
 	c.Set("tasks", tasks)
 
 	return c.Render(http.StatusOK, r.HTML("home/index.plush.html"))
@@ -30,7 +32,6 @@ func TaskList(c buffalo.Context) error {
 
 func Newtask(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
-	user := models.User{}
 	users := models.Users{}
 	q := tx.Q()
 	status := "true"
@@ -46,12 +47,32 @@ func Newtask(c buffalo.Context) error {
 		UserList = append(UserList, User)
 	}
 	c.Set("usersList", UserList)
-	c.Set("user", user)
 	c.Set("users", users)
 	c.Set("tasks", models.Task{})
 	return c.Render(http.StatusOK, r.HTML("tasks/new.plush.html"))
 }
 
+func Newtaskuser(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	users := models.Users{}
+	q := tx.Q()
+	status := "true"
+	q.Where("Active = ?", status)
+	if err := q.All(&users); err != nil {
+		return err
+	}
+	UserList := []map[string]interface{}{}
+	for _, user := range users {
+		User := map[string]interface{}{
+			user.Name + " " + user.LastName: user.ID,
+		}
+		UserList = append(UserList, User)
+	}
+	c.Set("usersList", UserList)
+	c.Set("users", users)
+	c.Set("tasks", models.Task{})
+	return c.Render(http.StatusOK, r.HTML("tasks/newtask.plush.html"))
+}
 func Createtask(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	tasks := models.Task{}

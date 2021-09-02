@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"strings"
-
-	"todo_list/models"
+	"todo_list/app/models"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5" // modificado
@@ -26,7 +25,6 @@ func AuthCreate(c buffalo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return errors.WithStack(err)
 	}
-
 	tx := c.Value("tx").(*pop.Connection)
 
 	// find a user with the email
@@ -55,6 +53,11 @@ func AuthCreate(c buffalo.Context) error {
 	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(u.Password))
 	if err != nil {
 		return bad()
+	}
+
+	if !u.Active {
+		c.Flash().Add("danger", "Your user is inactive")
+		return c.Redirect(302, "/")
 	}
 	c.Session().Set("current_user_id", u.ID)
 	c.Flash().Add("success", "Welcome Back to Buffalo!")

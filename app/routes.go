@@ -18,12 +18,17 @@ func setRoutes(root *buffalo.App) {
 	root.Use(middleware.Datenow)
 	root.Use(middleware.SetCurrentUser)
 	root.Use(middleware.Authorize)
+	root.Use(middleware.Authorizeusers)
 
 	root.GET("/", actions.AuthLogin)
 	root.POST("/auth", actions.AuthCreate)
 	root.GET("/tasks", actions.TaskList)
 	root.GET("/task/new", actions.Newtask)
 	root.POST("/task/create", actions.Createtask)
+
+	root.GET("/task/newtask", actions.Newtaskuser)
+	root.POST("/task/create", actions.Createtaskuser)
+
 	root.GET("/task/showtask/{task_id}", actions.Showtask)
 	root.GET("/task/edit/{task_id}", middleware.EditTaskAcess(actions.Edittask))
 	root.PUT("/task/edit/{task_id}/update", actions.Updatetask)
@@ -41,5 +46,6 @@ func setRoutes(root *buffalo.App) {
 
 	root.Middleware.Skip(middleware.Authorize, actions.AuthLogin, actions.AuthCreate, actions.AuthDestroy, actions.NewUser, actions.CreateUser)
 	root.Middleware.Skip(middleware.SetCurrentUser, actions.AuthLogin, actions.AuthCreate, actions.AuthDestroy, actions.NewUser)
+	root.Middleware.Skip(middleware.Authorizeusers, actions.AuthLogin, actions.AuthCreate, actions.NewUser, actions.TaskList, actions.AuthDestroy, actions.CreateUser, actions.Newtaskuser, actions.Createtask)
 	root.ServeFiles("/", base.Assets)
 }
