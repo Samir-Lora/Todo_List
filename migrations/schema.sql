@@ -55,10 +55,12 @@ ALTER TABLE public.tasks OWNER TO postgres;
 
 CREATE TABLE public.users (
     id uuid NOT NULL,
+    email character varying(255) NOT NULL,
+    password_hash character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     lastname character varying(255) NOT NULL,
-    email character varying(255) NOT NULL,
-    active boolean DEFAULT true NOT NULL,
+    active boolean NOT NULL,
+    rol character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

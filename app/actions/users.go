@@ -1,12 +1,14 @@
 package actions
 
 import (
+	"fmt"
 	"net/http"
 	"todo_list/app/models"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gofrs/uuid"
+	"github.com/pkg/errors"
 )
 
 func UserList(c buffalo.Context) error {
@@ -20,6 +22,7 @@ func UserList(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.HTML("users/userslist.plush.html"))
 }
 
+//NewUser renders the users form
 func NewUser(c buffalo.Context) error {
 	c.Set("users", models.User{})
 	return c.Render(http.StatusOK, r.HTML("users/newuser.plush.html"))
@@ -30,6 +33,10 @@ func CreateUser(c buffalo.Context) error {
 	user := models.User{}
 
 	if err := c.Bind(&user); err != nil {
+		return errors.WithStack(err)
+	}
+	err := user.Create(tx)
+	if err != nil {
 		return err
 	}
 	verrs := user.Validate(tx)
@@ -38,11 +45,15 @@ func CreateUser(c buffalo.Context) error {
 		c.Set("users", user)
 		return c.Render(http.StatusUnprocessableEntity, r.HTML("users/newuser.plush.html"))
 	}
+	user.Rol = "user"
+	fmt.Println(&user.Rol)
+
 	if err := tx.Create(&user); err != nil {
 		return err
 	}
+
 	c.Flash().Add("success", "User created success")
-	return c.Redirect(http.StatusSeeOther, "/users")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func Showuser(c buffalo.Context) error {

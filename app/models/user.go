@@ -2,24 +2,42 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/gobuffalo/pop/v5"
 	"github.com/gobuffalo/validate/v3"
 	"github.com/gobuffalo/validate/v3/validators"
 	"github.com/gofrs/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // User is used by pop to map your users database table to your go code.
 type User struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	Name      string    `json:"name" db:"name"`
-	LastName  string    `json:"lastname" db:"lastname"`
-	Email     string    `json:"email" db:"email"`
+	ID           uuid.UUID `json:"id" db:"id"`
+	Name         string    `json:"name" db:"name"`
+	LastName     string    `json:"lastname" db:"lastname"`
+	Email        string    `json:"email" db:"email"`
+	PasswordHash string    `json:"password_hash" db:"password_hash"`
+
+	Password             string `json:"-" db:"-"`
+	PasswordConfirmation string `json:"-" db:"-"`
+
 	Active    bool      `json:"active" db:"active"`
+	Rol       string    `json:"rol" db:"rol"`
 	Tasks     Tasks     `has_many:"tasks"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}
+
+func (u *User) Create(tx *pop.Connection) error {
+	u.Email = strings.ToLower(u.Email)
+	ph, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u.PasswordHash = string(ph)
+	return err
 }
 
 // String is not required by pop and may be deleted
@@ -45,6 +63,8 @@ func (c *User) Validate(tx *pop.Connection) *validate.Errors {
 		&validators.StringIsPresent{Field: c.Name, Name: "Name"},
 		&validators.StringIsPresent{Field: c.LastName, Name: "LastName"},
 		&validators.EmailIsPresent{Field: c.Email, Name: "Email"},
+		&validators.StringIsPresent{Field: c.Password, Name: "Password"},
+		&validators.StringIsPresent{Field: c.Password, Name: "PasswordConfirmation"},
 		&validators.FuncValidator{
 			Field:   c.Email,
 			Name:    "Email",
