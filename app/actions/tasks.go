@@ -14,15 +14,20 @@ func TaskList(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 
 	status := c.Param("complete")
+	user := c.Value("current_user").(models.User)
+
 	q := tx.Q()
+	if user.Rol == "user" {
+		q = tx.Where("user_id = ?", user.ID)
+	}
 	if status != "" {
 		q.Where("Complete = ?", status)
 	}
+
 	tasks := models.Tasks{}
 	if err := q.Order("date asc").All(&tasks); err != nil {
 		return err
 	}
-	user := c.Value("current_user").(models.User)
 
 	c.Set("user", user)
 	c.Set("tasks", tasks)
@@ -102,6 +107,37 @@ func Createtask(c buffalo.Context) error {
 		c.Set("usersList", UserList)
 
 		return c.Render(http.StatusUnprocessableEntity, r.HTML("tasks/new.plush.html"))
+	}
+	if err := tx.Create(&tasks); err != nil {
+		return err
+	}
+
+	c.Flash().Add("success", "task created success")
+	return c.Redirect(http.StatusSeeOther, "/tasks")
+}
+
+func Createtaskuser(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	tasks := models.Task{}
+
+	if err := c.Bind(&tasks); err != nil {
+		return err
+	}
+	users := models.Users{}
+	user := c.Value("current_user").(models.User)
+	tasks.UserID = user.ID
+	status := "true"
+	q := tx.Where("Id= ?", user.ID).Where("Active = ?", status)
+	if err := q.All(&users); err != nil {
+		return err
+	}
+
+	verrs := tasks.Validate()
+	if verrs.HasAny() {
+		c.Set("errors", verrs)
+		c.Set("tasks", tasks)
+
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("tasks/newtask.plush.html"))
 	}
 	if err := tx.Create(&tasks); err != nil {
 		return err

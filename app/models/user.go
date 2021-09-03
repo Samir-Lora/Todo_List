@@ -23,7 +23,7 @@ type User struct {
 	Password             string `json:"-" db:"-"`
 	PasswordConfirmation string `json:"-" db:"-"`
 
-	Active bool   `json:"active" db:"active"`
+	Active string `json:"active" db:"active"`
 	Rol    string `json:"rol" db:"rol"`
 
 	Tasks     Tasks     `has_many:"tasks"`
@@ -85,12 +85,18 @@ func (c *User) Validate(tx *pop.Connection) *validate.Errors {
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
-func (u *User) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
+func (c *User) ValidateCreate() *validate.Errors {
+	return validate.Validate(
+		&validators.StringIsPresent{Field: c.Name, Name: "Name"},
+		&validators.StringIsPresent{Field: c.LastName, Name: "LastName"},
+		&validators.EmailIsPresent{Field: c.Email, Name: "Email"},
+	)
 }
 
 // ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
 // This method is not required and may be deleted.
-func (u *User) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
+func (c *User) ValidateLogin() *validate.Errors {
+	return validate.Validate(
+		&validators.EmailIsPresent{Field: c.Email, Name: "Email"},
+	)
 }

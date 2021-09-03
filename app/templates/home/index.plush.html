@@ -13,6 +13,10 @@
             <div class="nav-item align-items-center"><a href="/tasks?complete=false" class="btn text-light <%=  SelectedFilter(params["complete"], "true")  %>"> Incompleted Task</a>
             </div>
             <div class="nav-item"><a href="/tasks?complete=true" class="btn text-light <%=  SelectedFilter(params["complete"], "false")  %>">Completed Task</a></div>
+            <%= if (user.Rol == "admin") { %>
+
+            <div class="nav-item"><a href="/users" class="btn text-light" >Users</a></div>
+            <%} %>
              <div class="btn-group">
                 <%= if (current_user) { %>
                 <button type="button" class="btn btn-danger text-capitalize"><%= current_user.Name %></button>
@@ -41,7 +45,7 @@
     </a>
     <%} %>
     <%= if (user.Rol == "admin") { %>
-       <a href="/user/new"> <button type="button" class="btn addbtn mr-3 <%= Button(params["complete"], "true")  %>">Add Users</button></a>
+       <a href="/user/new/invitation"> <button type="button" class="btn addbtn mr-3 <%= Button(params["complete"], "true")  %>">Add Users</button></a>
     <% } %>
     </div>
 </section>

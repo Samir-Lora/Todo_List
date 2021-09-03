@@ -4,7 +4,7 @@ create_table("users") {
     t.Column("password_hash", "string", {})
 	t.Column("name", "string", {})
 	t.Column("lastname", "string", {})
-	t.Column("active","bool",{})
+	t.Column("active","string",{})
 	t.Column("rol", "string", {})
 	t.Timestamps()
 }

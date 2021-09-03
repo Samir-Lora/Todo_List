@@ -5,5 +5,5 @@ INSERT INTO users
 )
 VALUES
 ( -- first row: values for the columns in the list above
- '99d415a2-ea98-44e2-aaf4-6cc8064f5357','samirlora0@gmail.com','$2a$10$eJ65uhrvF7bmoaRTUZmvg.AUcOaehUhHZdHtHVtYHzg1iWmq02llW'  ,'samir','lora',true,'admin',NOW(), NOW()
+ '99d415a2-ea98-44e2-aaf4-6cc8064f5357','samirlora0@gmail.com','$2a$10$eJ65uhrvF7bmoaRTUZmvg.AUcOaehUhHZdHtHVtYHzg1iWmq02llW'  ,'samir','lora','active','admin',NOW(), NOW()
 );

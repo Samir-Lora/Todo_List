@@ -3,7 +3,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 	"todo_list/app/models"
@@ -106,8 +105,6 @@ func Authorize(next buffalo.Handler) buffalo.Handler {
 func Authorizeusers(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		user := c.Value("current_user").(models.User)
-		fmt.Println(user.Rol)
-
 		if user.Rol == "admin" {
 			return next(c)
 		}

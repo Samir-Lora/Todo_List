@@ -28,7 +28,7 @@
     <section>
         <div class="container bg-white mt-5">
             <h2 class="ml-4 pt-5">New Task</h2>
-            <%= form_for(tasks, {action: "/task/create", method: "POST", class: "form"}) { %>
+            <%= form_for(tasks, {action: "/task/createuser", method: "POST", class: "form"}) { %>
                 <div class="d-flex mx-4 justify-content-between">
                     <div class="w-50 mr-3 mt-3"><%= f.InputTag ("Task") %></div>
                     <div class="w-50 ml-3 mt-3"> <%= f.InputTag("Date", {type: "datetime-local", min: "2010-01-02T00:00", value: "2021-08-17T00:00"}) %> </div>

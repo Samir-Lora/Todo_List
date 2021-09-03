@@ -2,6 +2,7 @@ package actions
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strings"
 	"todo_list/app/models"
@@ -34,40 +35,47 @@ func AuthCreate(c buffalo.Context) error {
 	bad := func() error {
 		verrs := validate.NewErrors()
 		verrs.Add("email", "invalid email/password")
-
 		c.Set("errors", verrs)
 		c.Set("user", u)
-
 		return c.Render(http.StatusUnauthorized, r.HTML("auth/landing.plush.html"))
 	}
-
+	inactived := func() error {
+		verrs := validate.NewErrors()
+		verrs.Add("email", "inactive user")
+		c.Set("errors", verrs)
+		c.Set("user", u)
+		return c.Render(http.StatusUnauthorized, r.HTML("auth/landing.plush.html"))
+	}
+	invited := func() error {
+		verrs := validate.NewErrors()
+		verrs.Add("email", "invited, add password")
+		c.Set("errors", verrs)
+		c.Set("user", u)
+		return c.Render(http.StatusUnauthorized, r.HTML("user/edit.plush.html"))
+	}
+	if u.Active == "invited" {
+		return invited()
+	}
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
-			// couldn't find an user with the supplied email address.
+			//couldn't find an user with the supplied email address.
 			return bad()
 		}
 		return errors.WithStack(err)
 	}
-
 	// confirm that the given password matches the hashed password from the db
 	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(u.Password))
 	if err != nil {
 		return bad()
 	}
-
-	if !u.Active {
-		c.Flash().Add("danger", "Your user is inactive")
-		return c.Redirect(302, "/")
+	if u.Active == "inactived" {
+		return inactived()
 	}
+
+	msg := fmt.Sprintf("Welcome %s!!", u.Name)
 	c.Session().Set("current_user_id", u.ID)
-	c.Flash().Add("success", "Welcome Back to Buffalo!")
-
-	redirectURL := "/tasks"
-	if redir, ok := c.Session().Get("redirectURL").(string); ok && redir != "" {
-		redirectURL = redir
-	}
-
-	return c.Redirect(302, redirectURL)
+	c.Flash().Add("success", msg)
+	return c.Redirect(302, "/tasks")
 }
 
 // AuthDestroy clears the session and logs a user out

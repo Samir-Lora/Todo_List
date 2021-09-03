@@ -46,7 +46,7 @@ func CreateUser(c buffalo.Context) error {
 		return c.Render(http.StatusUnprocessableEntity, r.HTML("users/newuser.plush.html"))
 	}
 	user.Rol = "user"
-	user.Active = true
+	user.Active = "active"
 	fmt.Println(&user.Rol)
 
 	if err := tx.Create(&user); err != nil {
@@ -55,6 +55,37 @@ func CreateUser(c buffalo.Context) error {
 
 	c.Flash().Add("success", "User created success")
 	return c.Redirect(http.StatusSeeOther, "/")
+}
+
+//NewInvitation renders the users form
+func NewInvitation(c buffalo.Context) error {
+	c.Set("user", models.User{})
+
+	return c.Render(http.StatusOK, r.HTML("users/newinvitation.plush.html"))
+}
+
+func CreateInvitation(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	user := models.User{}
+
+	if err := c.Bind(&user); err != nil {
+		return errors.WithStack(err)
+	}
+	verrs := user.ValidateCreate()
+	if verrs.HasAny() {
+		c.Set("errors", verrs)
+		c.Set("users", user)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("users/newinvitation.plush.html"))
+	}
+	user.Active = "invited"
+	fmt.Println(&user.Rol)
+
+	if err := tx.Create(&user); err != nil {
+		return err
+	}
+
+	c.Flash().Add("success", "User created success")
+	return c.Redirect(http.StatusSeeOther, "/users")
 }
 
 func Showuser(c buffalo.Context) error {
@@ -152,7 +183,7 @@ func Updateactive(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	user := models.User{}
 	userid := c.Param("user_id")
-
+	currentuser := c.Value("current_user").(models.User)
 	if err := tx.Find(&user, userid); err != nil {
 		return err
 	}
@@ -160,13 +191,22 @@ func Updateactive(c buffalo.Context) error {
 	if err := c.Bind(&user); err != nil {
 		return err
 	}
+
 	var current string
-	if !user.Active {
-		user.Active = true
+	if user.Active == "active" {
+		user.Active = "inactive"
+		if currentuser.ID.String() == userid {
+			c.Session().Clear()
+			c.Flash().Add("success", "You have been logged out and inactive !")
+			if err := tx.Update(&user); err != nil {
+				return err
+			}
+			return c.Redirect(302, "/")
+		}
 		c.Flash().Add("primary", "User actived success")
 		current = "/users"
-	} else if user.Active {
-		user.Active = false
+	} else if user.Active == "inactive" {
+		user.Active = "active"
 		c.Flash().Add("primary", "User desactive success")
 
 		current = "/users"
