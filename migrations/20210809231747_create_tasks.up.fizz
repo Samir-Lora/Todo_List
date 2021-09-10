@@ -5,6 +5,7 @@ create_table("tasks") {
 	t.Column("description", "text", {})
 	t.Column("date", "timestamp", {})
 	t.Column("complete", "bool", {})
+	t.Column("priority", "string", {})
 	t.Timestamps()
 }
 

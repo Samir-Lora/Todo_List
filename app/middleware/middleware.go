@@ -33,12 +33,29 @@ func IncompleteTask(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 		tx := models.DB()
 		q := tx.Q()
-		q.Where("Complete = false")
 		tasks := models.Tasks{}
-		if err := q.All(&tasks); err != nil {
-			return err
+		uid := c.Session().Get("current_user_id")
+		if uid != nil {
+			user := &models.User{}
+			tx := c.Value("tx").(*pop.Connection)
+			err := tx.Find(user, uid)
+			if err != nil {
+				return err
+			}
+			if user.Rol == "admin" {
+				q.Where("complete = false")
+				if err := q.All(&tasks); err != nil {
+					return err
+				}
+			} else {
+				q.Where("complete = false").Where("user_id = ?", uid)
+				if err := q.All(&tasks); err != nil {
+					return err
+				}
+			}
+			c.Set("rol", user.Rol)
+			c.Set("len", len(tasks))
 		}
-		c.Set("len", len(tasks))
 		return next(c)
 	}
 }
@@ -50,8 +67,8 @@ func EditTaskAcess(next buffalo.Handler) buffalo.Handler {
 		taskid := c.Param("task_id")
 		tx.Find(&task, taskid)
 		if task.Complete {
-			c.Flash().Add("danger", "cannot edit a complete task")
-			c.Redirect(http.StatusSeeOther, "/")
+			c.Flash().Add("danger", "Cannot edit a complete task")
+			c.Redirect(http.StatusSeeOther, "/tasks")
 		}
 		return next(c)
 	}

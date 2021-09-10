@@ -1,38 +1,20 @@
-<div class="bg-light body">
-    <section>
-        <nav class="navbar-light text-white nav">
-            <div class="nav-item d-flex">
-                <a href="/tasks" class="navbar-brand text-white h ml-5 mr-5">ToDo list</a>
-                <div class="ml-3 border-left border-white"></div>
-            </div>
-            <div class="d-flex flex-column ml-5">
-            <p class="incomplete"> <%= len %> Incompleted Tasks</p>
-            <p class="font-weight-ligh date" id="date"><%= datenow %></p>
-            </div>
+<%= partial("home/navbar.plush.html") %>
 
-            <div class="d-flex ml-auto mr-5">
-                <div class="nav-item align-items-center"><a href="/tasks?complete=false" class="btn text-light <%=  SelectedFilter(params["complete"], "true")  %>"> Incompleted Task</a>
-                </div>
-                <div class="nav-item"><a href="/tasks?complete=true" class="btn text-light <%=  SelectedFilter(params["complete"], "false")  %>">Completed Task</a></div>
-                <%= if (current_user) { %>
-                <div class="nav-item align-items-center btn text-light"><%= current_user.Name %></div>
-               <%= linkTo(logoutPath(), {data-method: "DELETE"}){ %> <div class="nav-item align-items-center btn text-light">Sign Out</div><% } %>
-            <% } else { %>
-              <%= linkTo(rootPath()){ %><div class="nav-item align-items-center btn text-light">Sign in</div><% } %>
-              <%= linkTo(newUserPath()){ %><div class="nav-item align-items-center btn text-light">Register</div><% } %>
-            <% } %>
-        </div>
-        </nav>
-    </section>
+<section>
 
-    <section>
-    <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight"><a href="/task/new">
-        <button type="button" class="btn addbtn <%= Button(params["complete"], "true")  %>">Add Task</button>
-    </a>
-       <a href="/user/new"> <button type="button" class="btn addbtn mr-3 <%= Button(params["complete"], "true")  %>">Add Users</button></a>
-    </div>
-    <div class="nav-item"><a href="/users" class="btn text-light">Users</a></div>
-
+  <%= if (user.Rol == "admin") { %>
+  <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight"><a href="/task/new">
+      <button type="button" class="btn addbtn <%= Button(params["complete"], "true")  %>">Add Task</button>
+  </a>
+  <% } else if (user.Rol == "user") {  %>
+  <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight"><a href="/task/newtask">
+      <button type="button" class="btn addbtn <%= Button(params["complete"], "true")  %>">Add Task</button>
+  </a>
+  <%} %>
+  <%= if (user.Rol == "admin") { %>
+     <a href="/user/new/invitation"> <button type="button" class="btn addbtn mr-3 <%= Button(params["complete"], "true")  %>">Add Users</button></a>
+  <% } %>
+  </div>
 </section>
 
 <section>
@@ -53,20 +35,20 @@
                     <th class="text-center" scope="row">
                         <%= form_for(user, {action: userUpdateactiveUserIDPath({user_id: user.ID}), method: "PUT", class: "form"}) { %>
                             <%= if (user.Active == "invited") { %>
-                            <i class="fas fa-user-edit text-primary"></i>
+                            <i class="fas fa-user-edit text-primary" title="User Invited"></i>
                             <% } %>
                             <%= if (user.Active == "inactive") { %>
                                 <button type="submit" data-method="PUT" class="btn my-0 py-0 text-danger">
-                                    <i class="far fa-dot-circle"></i>
+                                    <i class="fas fa-toggle-off" title="Click here to activate the user"></i>
                                 </button>
                         <% } else if (user.Active == "active") { %>
                                 <button  data-id="<%= user.ID %>" id="modalactive" data-toggle="modal" data-target="#inactive" type="button" class="btn my-0 py-0 text-success">
-                                    <i class="fas fa-circle"></i>
+                                    <i class="fas fa-toggle-on" title="Click here to desactive the user" ></i>
                                 </button>
                             <% } %>
                         <% } %>
                         </th>
-                        <td class="col-5 usertext"><a href="/user/showuser/<%= user.ID %>" ><%= user.Name %> <%= user.LastName %></a></td>
+                        <td class="col-5 usertext"><a href="/user/showuser/<%= user.ID %>" > <i class="fas fa-user-tie"></i>ㅤ<%= user.Name %> <%= user.LastName %> </a></td>
                         <td class="text-center" ><%= user.Email %></td>
                     <td >
                     <div class="d-flex pl-3">
@@ -79,6 +61,9 @@
             <% } %>
         </table>
     </div>
+    <div class="d-flex justify-content-center">
+      <%= paginator(userspaginator)%>
+  </div>
 
 </section>
 

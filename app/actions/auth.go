@@ -2,7 +2,6 @@ package actions
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"strings"
 	"todo_list/app/models"
@@ -35,47 +34,56 @@ func AuthCreate(c buffalo.Context) error {
 	bad := func() error {
 		verrs := validate.NewErrors()
 		verrs.Add("email", "invalid email/password")
+
 		c.Set("errors", verrs)
 		c.Set("user", u)
+
 		return c.Render(http.StatusUnauthorized, r.HTML("auth/landing.plush.html"))
 	}
-	inactived := func() error {
-		verrs := validate.NewErrors()
-		verrs.Add("email", "inactive user")
-		c.Set("errors", verrs)
-		c.Set("user", u)
-		return c.Render(http.StatusUnauthorized, r.HTML("auth/landing.plush.html"))
-	}
-	invited := func() error {
-		verrs := validate.NewErrors()
-		verrs.Add("email", "invited, add password")
-		c.Set("errors", verrs)
-		c.Set("user", u)
-		return c.Render(http.StatusUnauthorized, r.HTML("user/edit.plush.html"))
-	}
-	if u.Active == "invited" {
-		return invited()
-	}
+
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
-			//couldn't find an user with the supplied email address.
+			// couldn't find an user with the supplied email address.
+
 			return bad()
 		}
 		return errors.WithStack(err)
 	}
+	if u.Active == "inactive" {
+		c.Flash().Add("danger", "Your user is inactive")
+		return c.Redirect(302, "/")
+	}
+	if u.Active == "invited" {
+		verrs := validate.NewErrors()
+		if uid := c.Session().Get("current_user_id"); uid != nil {
+			u := models.User{}
+			tx := c.Value("tx").(*pop.Connection)
+			err := tx.Find(&u, uid)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+		}
+		c.Set("current_user", u)
+		c.Set("errors", verrs)
+		c.Set("user", u)
+		return c.Render(http.StatusUnauthorized, r.HTML("users/newpassbyinvitation.plush.html"))
+	}
 	// confirm that the given password matches the hashed password from the db
 	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(u.Password))
+
 	if err != nil {
 		return bad()
 	}
-	if u.Active == "inactived" {
-		return inactived()
+
+	c.Session().Set("current_user_id", u.ID)
+	c.Flash().Add("success", "Welcome Back "+u.Name+" !")
+
+	redirectURL := "/tasks"
+	if redir, ok := c.Session().Get("redirectURL").(string); ok && redir != "" {
+		redirectURL = redir
 	}
 
-	msg := fmt.Sprintf("Welcome %s!!", u.Name)
-	c.Session().Set("current_user_id", u.ID)
-	c.Flash().Add("success", msg)
-	return c.Redirect(302, "/tasks")
+	return c.Redirect(302, redirectURL)
 }
 
 // AuthDestroy clears the session and logs a user out

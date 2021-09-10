@@ -85,7 +85,31 @@ func (c *User) Validate(tx *pop.Connection) *validate.Errors {
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
-func (c *User) ValidateCreate() *validate.Errors {
+func (c *User) ValidateCreate(tx *pop.Connection) *validate.Errors {
+	return validate.Validate(
+		&validators.StringIsPresent{Field: c.Name, Name: "Name"},
+		&validators.StringIsPresent{Field: c.LastName, Name: "LastName"},
+		&validators.EmailIsPresent{Field: c.Email, Name: "Email"},
+		&validators.FuncValidator{
+			Field:   c.Email,
+			Name:    "Email",
+			Message: "%s is already exist",
+			Fn: func() bool {
+				var exist bool
+				q := tx.Where("email = ?", c.Email)
+				if c.ID != uuid.Nil {
+					q = q.Where("id != ?", c.ID)
+				}
+				exist, _ = q.Exists(c)
+				return !exist
+			},
+		},
+	)
+}
+
+// ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
+// This method is not required and may be deleted.
+func (c *User) ValidateUpdate() *validate.Errors {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: c.Name, Name: "Name"},
 		&validators.StringIsPresent{Field: c.LastName, Name: "LastName"},
@@ -93,10 +117,22 @@ func (c *User) ValidateCreate() *validate.Errors {
 	)
 }
 
-// ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.
-// This method is not required and may be deleted.
-func (c *User) ValidateLogin() *validate.Errors {
+func (c *User) ValidateUpdatePassword(tx *pop.Connection) *validate.Errors {
 	return validate.Validate(
-		&validators.EmailIsPresent{Field: c.Email, Name: "Email"},
+		&validators.StringIsPresent{Field: c.Password, Name: "Password"},
+		&validators.StringIsPresent{Field: c.Password, Name: "PasswordConfirmation"},
+		&validators.FuncValidator{
+			Name:    "Password",
+			Message: "Can't have the same password, try a new %v",
+			Fn: func() bool {
+				var exist bool
+				q := tx.Where("password_hash = ?", c.PasswordHash)
+				if c.ID != uuid.Nil {
+					q = q.Where("id != ?", c.ID)
+				}
+				exist, _ = q.Exists(c)
+				return exist
+			},
+		},
 	)
 }

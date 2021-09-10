@@ -15,20 +15,21 @@ func TaskList(c buffalo.Context) error {
 
 	status := c.Param("complete")
 	user := c.Value("current_user").(models.User)
+	q := tx.PaginateFromParams(c.Params())
 
-	q := tx.Q()
 	if user.Rol == "user" {
-		q = tx.Where("user_id = ?", user.ID)
+		q.Where("user_id = ?", user.ID)
 	}
 	if status != "" {
-		q.Where("Complete = ?", status)
+		q.Where("complete = ?", status)
 	}
 
 	tasks := models.Tasks{}
-	if err := q.Order("date asc").All(&tasks); err != nil {
+	if err := q.Eager("User").Order("priority, task, date").All(&tasks); err != nil {
 		return err
 	}
 
+	c.Set("taskspaginator", q.Paginator)
 	c.Set("user", user)
 	c.Set("tasks", tasks)
 
@@ -39,7 +40,7 @@ func Newtask(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	users := models.Users{}
 	q := tx.Q()
-	status := "true"
+	status := "active"
 	q.Where("Active = ?", status)
 	if err := q.All(&users); err != nil {
 		return err
@@ -66,14 +67,6 @@ func Newtaskuser(c buffalo.Context) error {
 	if err := q.All(&users); err != nil {
 		return err
 	}
-	UserList := []map[string]interface{}{}
-	for _, user := range users {
-		User := map[string]interface{}{
-			user.Name + " " + user.LastName: user.ID,
-		}
-		UserList = append(UserList, User)
-	}
-	c.Set("usersList", UserList)
 	c.Set("users", users)
 	c.Set("tasks", models.Task{})
 	return c.Render(http.StatusOK, r.HTML("tasks/newtask.plush.html"))
@@ -215,6 +208,47 @@ func Updatetask(c buffalo.Context) error {
 	return c.Redirect(http.StatusSeeOther, "/tasks")
 }
 
+func Edittaskuser(c buffalo.Context) error {
+	tx := c.Value("tx").(*pop.Connection)
+	tasks := models.Task{}
+	taskid := c.Param("task_id")
+
+	if err := tx.Find(&tasks, taskid); err != nil {
+		return err
+	}
+	tasks.UserID = c.Value("current_user").(models.User).ID
+	c.Set("task", tasks)
+	return c.Render(http.StatusOK, r.HTML("tasks/edituser.plush.html"))
+}
+
+func Updatetaskuser(c buffalo.Context) error {
+
+	tx := c.Value("tx").(*pop.Connection)
+	task := models.Task{}
+	taskid := c.Value("current_user").(models.User).ID
+
+	if err := tx.Find(&task, taskid); err != nil {
+		return err
+	}
+
+	if err := c.Bind(&task); err != nil {
+		return err
+	}
+	verrs := task.ValidateUpdate()
+	if verrs.HasAny() {
+		c.Set("errors", verrs)
+		c.Set("task", task)
+
+		return c.Render(http.StatusOK, r.HTML("tasks/edituser.plush.html"))
+	}
+	if err := tx.Update(&task); err != nil {
+		return err
+	}
+	c.Flash().Add("primary", "Task updated success")
+
+	return c.Redirect(http.StatusSeeOther, "/tasks")
+}
+
 func Delete(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	taskid := c.Param("task_id")
@@ -222,8 +256,23 @@ func Delete(c buffalo.Context) error {
 	if taskid == "" {
 		return c.Redirect(http.StatusNotFound, "/tasks")
 	}
-	tasks := &models.Task{ID: taskid2}
-	if err := tx.Destroy(tasks); err != nil {
+	tasks := models.Tasks{}
+	taskdadmin := c.Value("current_user").(models.User)
+	if taskdadmin.Rol == "user" {
+		if err := tx.Where("user_id = ? ", &taskdadmin.ID).Where("id = ?", &taskid).All(&tasks); err != nil {
+			return err
+		}
+		if taskdadmin.ID == taskid2 {
+			if err := tx.Destroy(&taskdadmin); err != nil {
+				return err
+			}
+			c.Flash().Add("danger", "Task delete success")
+			return c.Redirect(http.StatusSeeOther, "/tasks")
+		}
+	}
+
+	task := &models.Task{ID: taskid2}
+	if err := tx.Destroy(task); err != nil {
 		return err
 	}
 	c.Flash().Add("danger", "Task delete success")

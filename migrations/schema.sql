@@ -42,6 +42,7 @@ CREATE TABLE public.tasks (
     description text NOT NULL,
     date timestamp without time zone NOT NULL,
     complete boolean NOT NULL,
+    priority character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

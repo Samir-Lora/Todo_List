@@ -1,5 +1,5 @@
 <section>
-  <nav class="navbar-light text-white nav">
+  <nav class="navbar navbar-light text-white nav2">
     <div class="nav-item d-flex">
       <a href="/" class="navbar-brand text-white h ml-5 mr-5">ToDo list</a>
       <div class="ml-3 border-left border-white"></div>
@@ -43,9 +43,9 @@
         <div class="col-sm-6">
           <div class="card border-0 bg-light">
             <div class="card-body">
-              <%= f.InputTag("Email") %>
-                <%= f.InputTag("Password", {type: "password" }) %>
-                  <div class="d-flex align-content-center justify-content-center flex-wrap">
+              <%= f.InputTag("Email", {autocomplete: "username"}) %>
+              <%= f.InputTag("Password", {type: "password", autocomplete: "current-password"}) %>
+              <div class="d-flex align-content-center justify-content-center flex-wrap">
                     <button class="btn btn-success">Sign In!</button>
                   </div>
             </div>

@@ -1,30 +1,36 @@
 package actions_test
 
 import (
+	"strings"
 	"time"
 	"todo_list/app/models"
 
 	"github.com/gofrs/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (as *ActionSuite) Test_TaskList() {
 	//create models
 	var x error
 	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
-	user := &models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res4 := as.HTML("/user/create").Post(user)
-	as.Equal(303, res4.Code)
+	user := models.User{ID: id, Email: "hola@gmail.com", Password: "hola", Name: "prueba", LastName: "Prueba", Active: "active", Rol: "admin", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user.Email = strings.ToLower(user.Email)
+	ph, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.PasswordHash = string(ph)
+	as.NoError(as.DB.Create(&user))
+	as.Session.Set("current_user_id", user.ID)
 	task := models.Tasks{{UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()},
-		{UserID: user.ID, Task: "prueba", Description: "Prueba2", Date: time.Now(), Complete: true, CreatedAt: time.Now(), UpdatedAt: time.Now()}}
+		{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}}
 	for _, t := range task {
 		err := as.DB.Create(&t)
 		as.NoError(err)
 	}
 	//testing url "/" is a index
+	as.Session.Set("current_user_id", user.ID)
 
-	res := as.HTML("/").Get()
-	res2 := as.HTML("/?complete=true").Get()
-	res3 := as.HTML("/?complete=false").Get()
+	res := as.HTML("/tasks").Get()
+	res2 := as.HTML("/tasks?complete=true").Get()
+	res3 := as.HTML("/tasks?complete=false").Get()
 
 	body := res.Body.String()
 	body2 := res2.Body.String()
@@ -43,7 +49,18 @@ func (as *ActionSuite) Test_TaskList() {
 }
 
 func (as *ActionSuite) Test_Newtask() {
-	//testing url "/task/new" is a index
+
+	var x error
+	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
+
+	user := models.User{ID: id, Email: "hola@gmail.com", Password: "hola", Name: "prueba", LastName: "Prueba", Active: "active", Rol: "admin", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user.Email = strings.ToLower(user.Email)
+	ph, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.PasswordHash = string(ph)
+	as.NoError(as.DB.Create(&user))
+	//testing url "/task/new"
+	as.Session.Set("current_user_id", user.ID)
+
 	restask := as.HTML("/task/new").Get()
 	//response stauts
 	as.Equal(200, restask.Code)
@@ -53,14 +70,17 @@ func (as *ActionSuite) Test_Createtask() {
 	//testing url "/task/create" is post in new
 	var x error
 	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
-	user := &models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res := as.HTML("/user/create").Post(user)
-	as.Equal(303, res.Code)
-	task := &models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res2 := as.HTML("/task/create").Post(task)
+	user := models.User{ID: id, Email: "hola@gmail.com", Password: "hola", Name: "prueba", LastName: "Prueba", Active: "inactive", Rol: "admin", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user.Email = strings.ToLower(user.Email)
+	ph, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.PasswordHash = string(ph)
+	as.NoError(as.DB.Create(&user))
+	as.Session.Set("current_user_id", user.ID)
+	task := models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	res2 := as.HTML("/task/create").Post(&task)
 	as.Equal(303, res2.Code)
-	as.Equal("/", res2.Location())
-	err := as.DB.First(task)
+	as.Equal("/tasks", res2.Location())
+	err := as.DB.First(&task)
 	as.NoError(err)
 	as.NotZero(task.ID)
 	as.NotZero(task.CreatedAt)
@@ -72,9 +92,9 @@ func (as *ActionSuite) Test_Createtask() {
 func (as *ActionSuite) Test_Edittask() {
 	var x error
 	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
-	user := &models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res := as.HTML("/user/create").Post(user)
-	as.Equal(303, res.Code)
+	user := models.User{ID: id, Email: "hola@gmail.com", Password: "hola", Name: "prueba", LastName: "Prueba", Active: "inactive", Rol: "admin", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	as.NoError(as.DB.Create(&user))
+	as.Session.Set("current_user_id", user.ID)
 	task := &models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	verrs, _ := as.DB.ValidateAndCreate(task)
 	as.False(verrs.HasAny())
@@ -89,9 +109,9 @@ func (as *ActionSuite) Test_Edittask() {
 func (as *ActionSuite) Test_Updatetask() {
 	var x error
 	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
-	user := &models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res2 := as.HTML("/user/create").Post(user)
-	as.Equal(303, res2.Code)
+	user := models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: "inactive", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	as.NoError(as.DB.Create(&user))
+	as.Session.Set("current_user_id", user.ID)
 	task := &models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	verrs, _ := as.DB.ValidateAndCreate(task)
 	as.False(verrs.HasAny())
@@ -109,11 +129,12 @@ func (as *ActionSuite) Test_Updatetask() {
 func (as *ActionSuite) Test_Delete() {
 	var x error
 	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
-	user := &models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res2 := as.HTML("/user/create").Post(user)
+	user := models.User{ID: id, Email: "hola@gmail.com", Password: "hola", Name: "prueba", LastName: "Prueba", Active: "inactive", Rol: "admin", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	res2 := as.HTML("/user/create").Post(&user)
+	as.Session.Set("current_user_id", user.ID)
 	as.Equal(303, res2.Code)
-	task := &models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	verrs, _ := as.DB.ValidateAndCreate(task)
+	task := models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	verrs, _ := as.DB.ValidateAndCreate(&task)
 	as.False(verrs.HasAny())
 
 	res := as.HTML("/task/delete/{%s}", task.ID).Delete()
@@ -123,9 +144,9 @@ func (as *ActionSuite) Test_Delete() {
 func (as *ActionSuite) Test_Updatecomplete() {
 	var x error
 	id := uuid.Must(uuid.FromStringOrNil("2baaec43-8520-4120-8adf-c1f604fe30eb"), x)
-	user := &models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
-	res2 := as.HTML("/user/create").Post(user)
-	as.Equal(303, res2.Code)
+	user := models.User{ID: id, Name: "prueba", LastName: "Prueba", Email: "hola@gmail.com", Active: "inactive", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	as.NoError(as.DB.Create(&user))
+	as.Session.Set("current_user_id", user.ID)
 	task := &models.Task{ID: id, UserID: user.ID, Task: "prueba", Description: "Prueba", Date: time.Now(), Complete: false, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	verrs, _ := as.DB.ValidateAndCreate(task)
 	as.False(verrs.HasAny())

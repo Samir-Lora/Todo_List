@@ -17,6 +17,7 @@ type Task struct {
 	Description string    `json:"description" db:"description"`
 	Date        time.Time `json:"date" db:"date"`
 	Complete    bool      `json:"complete" db:"complete"`
+	Priority    string    `json:"priority" db:"priority"`
 	User        User      `belongs_to:"user"`
 	UserID      uuid.UUID `json:"user_id" db:"user_id"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`

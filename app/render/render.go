@@ -28,6 +28,9 @@ var Helpers = map[string]interface{}{
 	"Datecompleted":  Datecompleted,
 	"SelectedFilter": SelectedFilter,
 	"Button":         Button,
+	"Priority":       Priority,
+	"Prioritycolor":  Prioritycolor,
+	"Priorityicon":   Priorityicon,
 }
 
 func Date(value time.Time) string {
@@ -60,5 +63,43 @@ func Button(completed string, expectedValue string) string {
 		value = "d"
 	}
 	return value
+}
 
+func Priority(status string) string {
+
+	var statuspriority string
+	if status == "1" {
+		statuspriority = "High"
+	} else if status == "2" {
+		statuspriority = "Medium"
+	} else if status == "3" {
+		statuspriority = "Low"
+	}
+	return statuspriority
+}
+
+func Prioritycolor(status string) string {
+
+	var statuspriority string
+
+	if status == "1" {
+		statuspriority = "text-danger"
+	} else if status == "2" {
+		statuspriority = "text-warning"
+	} else if status == "3" {
+		statuspriority = "text-success"
+	}
+	return statuspriority
+}
+
+func Priorityicon(status string) string {
+	var iconpriority string
+	if status == "1" {
+		iconpriority = "exclamation-circle"
+	} else if status == "2" {
+		iconpriority = "exclamation-triangle"
+	} else if status == "3" {
+		iconpriority = "info-circle"
+	}
+	return iconpriority
 }

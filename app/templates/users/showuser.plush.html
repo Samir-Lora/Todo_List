@@ -1,0 +1,24 @@
+<%= partial("home/navbar.plush.html") %>
+    <section>
+        <div class="container  bg-white mt-5">
+            <div class="card ">
+                <div class="card-header text-center">
+                    <h2 class="ml-4 pt-3 text-primary">User Details</h2>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title h3  text-capitalize">Name : <%= user.Name %>
+                            <%= user.LastName %>
+                    </h5>
+                    <p class="card-text">Email: <%= user.Email %>
+                    </p>
+                    <div class="card-text text-capitalize">Rol: <%= user.Rol %>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="/users"> <button class="my-3 btn bg-dark text-light"><i class="fas fa-undo"></i> Back </button></a>
+            </div>
+
+        </div>
+    </section>
+    </div>

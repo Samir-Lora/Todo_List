@@ -1,0 +1,22 @@
+<%= partial("home/navbar.plush.html") %>
+    <section>
+        <div class="container bg-white mt-5">
+            <h2 class="ml-4 pt-5">Edit Task</h2>
+            <%= form_for(task, {action: editTaskTaskIDUpdatePath({ task_id: task.ID}) , method: "PUT", class: "form"}) { %>
+                <div class="d-flex mx-4 justify-content-between">
+                    <div class="w-50 mr-3 mt-3"><%= f.InputTag("Task") %></div>
+                    <div class="w-50 ml-3 mt-3"> <%= f.InputTag("Date", {type: "datetime-local", min: "2010-01-02T00:00", value: task.Date.Format("2006-01-02T15:04")}) %> </div>
+                </div>
+                <div class="mx-4">
+                    <%= f.SelectTag("Priority", {options: {"High": "1", "Medium": "2", "Low": "3"}}) %>
+                <%= f.TextArea("Description") %>
+                <div class="d-flex flex-row-reverse">
+                        <input class=" addbtn2 mb-5 ml-3" type="submit" value="Edit task">
+                        <a href="/tasks?complete=false" class="mb-5"> <button type="button" class="btn btn-light">Cancel</button> </a>
+                </div>
+                </div>
+            <% } %>
+        </div>
+    </section>
+</div>
+
