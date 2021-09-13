@@ -20,8 +20,9 @@ type User struct {
 	Email        string    `json:"email" db:"email"`
 	PasswordHash string    `json:"password_hash" db:"password_hash"`
 
-	Password             string `json:"-" db:"-"`
-	PasswordConfirmation string `json:"-" db:"-"`
+	Password             string `json:"password" db:"-"`
+	PasswordConfirmation string `json:"password_confirmation" db:"-"`
+	CurrentPassword      string `json:"current_password" db:"-"`
 
 	Active string `json:"active" db:"active"`
 	Rol    string `json:"rol" db:"rol"`
@@ -120,18 +121,40 @@ func (c *User) ValidateUpdate() *validate.Errors {
 func (c *User) ValidateUpdatePassword(tx *pop.Connection) *validate.Errors {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: c.Password, Name: "Password"},
-		&validators.StringIsPresent{Field: c.Password, Name: "PasswordConfirmation"},
+		&validators.StringIsPresent{Field: c.PasswordConfirmation, Name: "PasswordConfirmation"},
 		&validators.FuncValidator{
 			Name:    "Password",
 			Message: "Can't have the same password, try a new %v",
 			Fn: func() bool {
 				var exist bool
-				q := tx.Where("password_hash = ?", c.PasswordHash)
-				if c.ID != uuid.Nil {
-					q = q.Where("id != ?", c.ID)
+				err := bcrypt.CompareHashAndPassword([]byte(c.PasswordHash), []byte(c.Password))
+				if err != nil {
+					return !exist
 				}
-				exist, _ = q.Exists(c)
 				return exist
+			},
+		},
+		&validators.FuncValidator{
+			Name:    "PasswordConfirmation",
+			Message: "Passwords don`t the same, please check it %v",
+			Fn: func() bool {
+				var exist bool
+				if c.Password != c.PasswordConfirmation {
+					return exist
+				}
+				return !exist
+			},
+		},
+		&validators.FuncValidator{
+			Name:    "CurrentPassword",
+			Message: "Password incorrect %v",
+			Fn: func() bool {
+				var exist bool
+				err := bcrypt.CompareHashAndPassword([]byte(c.PasswordHash), []byte(c.CurrentPassword))
+				if err != nil {
+					return exist
+				}
+				return !exist
 			},
 		},
 	)

@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"todo_list/app/models"
@@ -157,23 +156,20 @@ func Updatepassword(c buffalo.Context) error {
 }
 
 //Function change password of current user
-func Changepass(c buffalo.Context) error {
-	userid := c.Param("user_id")
+func ChangePass(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	user := c.Value("current_user").(models.User)
+	userid := c.Param("user_id")
 
-	if err := tx.Find(&user, userid); err != nil {
-		return err
+	if user.Rol == "user" && user.ID.String() != userid {
+		c.Flash().Add("danger", "You must be authorized to see that page")
+		return c.Redirect(302, "/tasks")
 	}
 
 	if err := c.Bind(&user); err != nil {
 		return err
 	}
-	//create a password hash
-	err := user.Create(tx)
-	if err != nil {
-		return err
-	}
+
 	verrs := user.ValidateUpdatePassword(tx)
 	if verrs.HasAny() {
 		c.Set("errors", verrs)
@@ -181,6 +177,12 @@ func Changepass(c buffalo.Context) error {
 
 		return c.Render(http.StatusOK, r.HTML("users/changepassword.plush.html"))
 	}
+	//create a password hash
+	err := user.Create(tx)
+	if err != nil {
+		return err
+	}
+
 	if err := tx.Update(&user); err != nil {
 		return err
 	}
@@ -196,8 +198,6 @@ func Showuser(c buffalo.Context) error {
 	userid := c.Param("user_id")
 	if user.Rol == "user" && user.ID.String() == userid {
 		if err := tx.Find(&user, userid); err != nil {
-			fmt.Println("holi")
-
 			c.Set("user", user)
 			return c.Render(http.StatusOK, r.HTML("users/showuser.plush.html"))
 		}

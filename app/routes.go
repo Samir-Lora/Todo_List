@@ -46,7 +46,7 @@ func setRoutes(root *buffalo.App) {
 	root.GET("/user/create/password", actions.CreatePassByInvitation)
 	root.PUT("/user/create/update/password/{user_id}", actions.UpdatePassByInvitation)
 	root.GET("/user/update/password", actions.Updatepassword)
-	root.PUT("/user/change/password/{user_id}", actions.Changepass)
+	root.PUT("/user/change/password/{user_id}", actions.ChangePass)
 
 	root.GET("/user/showuser/{user_id}", actions.Showuser)
 	root.GET("/user/edit/{user_id}", actions.Edituser)
@@ -55,8 +55,8 @@ func setRoutes(root *buffalo.App) {
 	root.PUT("/user/updateactive/{user_id}", actions.Updateactive)
 	root.DELETE("/logout", actions.AuthDestroy)
 
-	root.Middleware.Skip(middleware.Authorize, actions.AuthLogin, actions.AuthCreate, actions.AuthDestroy, actions.NewUser, actions.CreateUser, actions.CreatePassByInvitation, actions.UpdatePassByInvitation, actions.Changepass)
+	root.Middleware.Skip(middleware.Authorize, actions.AuthLogin, actions.AuthCreate, actions.AuthDestroy, actions.NewUser, actions.CreateUser, actions.CreatePassByInvitation, actions.UpdatePassByInvitation, actions.ChangePass)
 	root.Middleware.Skip(middleware.SetCurrentUser, actions.AuthLogin, actions.AuthCreate, actions.AuthDestroy, actions.NewUser)
-	root.Middleware.Skip(middleware.Authorizeusers, actions.AuthLogin, actions.AuthCreate, actions.NewUser, actions.TaskList, actions.AuthDestroy, actions.CreateUser, actions.Newtaskuser, actions.Createtask, actions.Createtaskuser, actions.Updatecomplete, actions.UpdatePassByInvitation, actions.Showtask, middleware.EditTaskAcess(actions.Edittask), actions.Updatetask, actions.Delete, actions.Updatepassword, actions.Changepass, actions.Showuser)
+	root.Middleware.Skip(middleware.Authorizeusers, actions.AuthLogin, actions.AuthCreate, actions.NewUser, actions.TaskList, actions.AuthDestroy, actions.CreateUser, actions.Newtaskuser, actions.Createtask, actions.Createtaskuser, actions.Updatecomplete, actions.UpdatePassByInvitation, actions.Showtask, middleware.EditTaskAcess(actions.Edittask), actions.Updatetask, actions.Delete, actions.Updatepassword, actions.ChangePass, actions.Showuser)
 	root.ServeFiles("/", base.Assets)
 }
