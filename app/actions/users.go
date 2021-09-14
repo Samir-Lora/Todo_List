@@ -205,6 +205,7 @@ func Showuser(c buffalo.Context) error {
 		if err := tx.Find(&user, userid); err != nil {
 			return c.Render(http.StatusNotFound, r.HTML("/users"))
 		}
+		c.Set("user", user)
 	} else {
 		c.Flash().Add("danger", "You must be authorized to see that page")
 		return c.Redirect(302, "/tasks")

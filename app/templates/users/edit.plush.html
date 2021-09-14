@@ -1,22 +1,19 @@
 <%= partial("home/navbar.plush.html") %>
-
-    <section>
-        <div class="container bg-white mt-5">
-            <h2 class="ml-4 pt-5">Edit User</h2>
-            <%= form_for(user, {action: editUserUserIDUpdatePath({ user_id: user.ID}) , method: "PUT", class: "form"}) { %>
-                <div class="d-flex mx-4 justify-content-between">
-                    <div class="w-50 mr-3 mt-3"><%= f.InputTag("Name") %></div>
-                    <div class="w-50 mr-3 mt-3"><%= f.InputTag ("LastName") %></div>
-                </div>
-                <div class="mx-4">
-                <%= f.InputTag("Email",{type: "Email"}) %>
-                <div class="d-flex flex-row-reverse">
-                        <input class=" addbtn2 mb-5 ml-3" type="submit" value="Edit task">
-                        <a href="/users" class="mb-5"> <button type="button" class="btn btn-light">Cancel</button> </a>
-                </div>
-                </div>
-            <% } %>
-        </div>
-    </section>
-</div>
-
+<section>
+    <div class="container bg-white mt-5">
+        <h2 class="ml-4 pt-5">Edit User</h2>
+        <%= form_for(user, {action: editUserUserIDUpdatePath({ user_id: user.ID}) , method: "PUT", class: "form"}) { %>
+            <div class="d-flex mx-4 justify-content-between">
+                <div class="w-50 mr-3 mt-3"><%= f.InputTag("Name") %></div>
+                <div class="w-50 mr-3 mt-3"><%= f.InputTag ("LastName") %></div>
+            </div>
+            <div class="mx-4">
+            <%= f.InputTag("Email",{type: "Email"}) %>
+            <div class="d-flex flex-row-reverse">
+                    <input class=" addbtn2 mb-5 ml-3" type="submit" value="Edit task">
+                    <a href="/users" class="mb-5"> <button type="button" class="btn btn-light">Cancel</button> </a>
+            </div>
+            </div>
+        <% } %>
+    </div>
+</section>

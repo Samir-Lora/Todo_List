@@ -39,6 +39,7 @@ func TaskList(c buffalo.Context) error {
 func Newtask(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	users := models.Users{}
+	user := c.Value("current_user").(models.User)
 	q := tx.Q()
 	status := "active"
 	q.Where("Active = ?", status)
@@ -54,6 +55,7 @@ func Newtask(c buffalo.Context) error {
 	}
 	c.Set("usersList", UserList)
 	c.Set("users", users)
+	c.Set("user", user)
 	c.Set("tasks", models.Task{})
 	return c.Render(http.StatusOK, r.HTML("tasks/new.plush.html"))
 }
@@ -61,12 +63,14 @@ func Newtask(c buffalo.Context) error {
 func Newtaskuser(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	users := models.Users{}
+	user := c.Value("current_user").(models.User)
 	q := tx.Q()
 	status := "true"
 	q.Where("Active = ?", status)
 	if err := q.All(&users); err != nil {
 		return err
 	}
+	c.Set("user", user)
 	c.Set("users", users)
 	c.Set("tasks", models.Task{})
 	return c.Render(http.StatusOK, r.HTML("tasks/newtask.plush.html"))
@@ -143,11 +147,12 @@ func Createtaskuser(c buffalo.Context) error {
 func Showtask(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	task := models.Task{}
+	user := c.Value("current_user").(models.User)
 	taskid := c.Param("task_id")
 	if err := tx.Find(&task, taskid); err != nil {
 		return c.Render(http.StatusNotFound, r.HTML("/tasks"))
 	}
-
+	c.Set("user", user)
 	c.Set("task", task)
 	return c.Render(http.StatusOK, r.HTML("tasks/showtask.plush.html"))
 }
@@ -156,6 +161,7 @@ func Edittask(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	tasks := models.Task{}
 	taskid := c.Param("task_id")
+	user := c.Value("current_user").(models.User)
 
 	if err := tx.Find(&tasks, taskid); err != nil {
 		return err
@@ -175,7 +181,7 @@ func Edittask(c buffalo.Context) error {
 	}
 	c.Set("usersList", UserList)
 	c.Set("users", users)
-
+	c.Set("user", user)
 	c.Set("task", tasks)
 	return c.Render(http.StatusOK, r.HTML("tasks/edit.plush.html"))
 }
@@ -211,12 +217,15 @@ func Updatetask(c buffalo.Context) error {
 func Edittaskuser(c buffalo.Context) error {
 	tx := c.Value("tx").(*pop.Connection)
 	tasks := models.Task{}
+	user := c.Value("current_user").(models.User)
+
 	taskid := c.Param("task_id")
 
 	if err := tx.Find(&tasks, taskid); err != nil {
 		return err
 	}
 	tasks.UserID = c.Value("current_user").(models.User).ID
+	c.Set("user", user)
 	c.Set("task", tasks)
 	return c.Render(http.StatusOK, r.HTML("tasks/edituser.plush.html"))
 }

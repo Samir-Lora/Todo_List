@@ -1,18 +1,17 @@
 <%= partial("home/navbar.plush.html") %>
-    <section>
-        <div class="container bg-white mt-5">
-            <h1 class="ml-4 pt-5">Register</h1>
-            <%= form_for(user, {action: "/user/create/invitation" , method: "POST" , class: "form" }) { %>
-                <div class="auth-wrapper">
-                    <div class="sign-form">
-                        <%= f.InputTag("Name", {}) %>
-                        <%= f.InputTag("LastName", {}) %>
-                        <%= f.InputTag("Email") %>
-                        <%= f.SelectTag("Rol", {options: {"Admin": "admin", "User": "user"} }) %>
-                        <button class="btn btn-success mb-3">Register!</button>
-                    </div>
+<section>
+    <div class="container bg-white mt-5">
+        <h1 class="ml-4 pt-5">Register</h1>
+        <%= form_for(user, {action: "/user/create/invitation" , method: "POST" , class: "form" }) { %>
+            <div class="auth-wrapper">
+                <div class="sign-form">
+                    <%= f.InputTag("Name", {}) %>
+                    <%= f.InputTag("LastName", {}) %>
+                    <%= f.InputTag("Email") %>
+                    <%= f.SelectTag("Rol", {options: {"Admin": "admin", "User": "user"} }) %>
+                    <button class="btn btn-success mb-3">Register!</button>
                 </div>
-                <% } %>
-        </div>
-    </section>
-</div>
+            </div>
+            <% } %>
+    </div>
+</section>

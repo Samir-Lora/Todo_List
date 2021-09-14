@@ -25,20 +25,17 @@
 </section>
 
 <section>
-  <div class="container bg-white">
-    <div class="mt-5">
+    <div class="container bg-white mt-5">
       <%= partial("flashs/flash.plush.html") %>
     </div>
   <div class="container bg-light">
     <h1 class="ml-3 pt-5">Login</h1>
     <%= form_for(user, {action: authPath(), method: "POST" , class: "form" }) { %>
       <div class="row">
-        <div class="col-sm-6">
-          <div class="card border-0 bg-light">
-            <div class="card-body text-center  ">
+          <div class="card border-0 col-sm-6 bg-light">
+            <div class="card-body text-center">
               <i class="fas fa-users fa-10x"></i>
             </div>
-          </div>
         </div>
         <div class="col-sm-6">
           <div class="card border-0 bg-light">
@@ -53,5 +50,5 @@
         </div>
       </div>
       <% } %>
-  </div>
+    </div>
 </section>

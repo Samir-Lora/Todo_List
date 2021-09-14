@@ -1,18 +1,17 @@
 <%= partial("home/navbar.plush.html") %>
-    <section>
-        <div class="container text-center bg-white mt-5">
-            <div class="card text-center">
-                <div class="card-header">
-                    <h2 class="ml-4 pt-5">Task Details</h2>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title"><%= task.Task %></h5>
-                    <p class="card-text">Description: <%= task.Description %></p>
-                </div>
-                <div class="card-footer text-muted"><%= Datecompleted(task.Complete) %>  <%= task.Date.Format("Mon Jan 2 at 3:4 PM") %> </div>
+<section>
+    <div class="container text-center bg-white mt-5">
+        <div class="card text-center">
+            <div class="card-header">
+                <h2 class="ml-4 pt-5">Task Details</h2>
             </div>
-            <a href="/tasks"> <button class="my-2 btn bg-dark text-light"> Back </button></a>
-
+            <div class="card-body">
+                <h5 class="card-title"><%= task.Task %></h5>
+                <p class="card-text">Description: <%= task.Description %></p>
+            </div>
+            <div class="card-footer text-muted"><%= Datecompleted(task.Complete) %>  <%= task.Date.Format("Mon Jan 2 at 3:4 PM") %> </div>
         </div>
-    </section>
-</div>
+        <a href="/tasks"> <button class="my-2 btn bg-dark text-light"> Back </button></a>
+
+    </div>
+</section>

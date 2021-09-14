@@ -10,6 +10,7 @@
   <div class="d-flex flex-row-reverse mr-5 my-4 bd-highlight"><a href="/task/newtask">
       <button type="button" class="btn addbtn <%= Button(params["complete"], "true")  %>">Add Task</button>
   </a>
+  </div>
   <%} %>
   <%= if (user.Rol == "admin") { %>
      <a href="/user/new/invitation"> <button type="button" class="btn addbtn mr-3 <%= Button(params["complete"], "true")  %>">Add Users</button></a>
