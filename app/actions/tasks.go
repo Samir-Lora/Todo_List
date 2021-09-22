@@ -32,7 +32,6 @@ func TaskList(c buffalo.Context) error {
 	c.Set("taskspaginator", q.Paginator)
 	c.Set("user", user)
 	c.Set("tasks", tasks)
-
 	return c.Render(http.StatusOK, r.HTML("home/index.plush.html"))
 }
 

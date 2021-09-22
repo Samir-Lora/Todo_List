@@ -18,67 +18,67 @@
     <% } %>
     </div>
 </section>
-
-<section>
     <div class="mx-5">
-    <%= partial("flashs/flash.plush.html") %>
-        <table class="table table-hover">
-            <thead class="thead text-white">
-                <tr>
-                    <th scope="col" class="col-1 p-0"></th>
-                    <th scope="col">Task</th>
-                    <th class="text-center" scope="col">Priority</th>
-                    <th class="text-center" scope="col">Complete by</th>
-                    <th class="pl-4" id="action" scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            <%= for(task) in tasks { %>
-                <tr>
-                    <th class="text-center" scope="row">
-                    <%= form_for(task, {action: taskUpdatecompleteTaskIDPath({task_id: task.ID}), method: "PUT", class: "form"}) { %>
-                        <%= if (task.Complete == false) { %>
-                            <button type="submit" data-method="PUT" class="btn my-0 py-0">
-                            <i class="far fa-check-circle" title="Click here to activate the task"></i>
-                            </button>
-                    <% } else if (task.Complete == true ) { %>
-                            <button type="submit" data-method="PUT" class="btn my-0 py-0 text-danger">
-                            <i class="far fa-times-circle" title="Click here to desactive the task"></i>
-                            </button>
-                        <% } %>
-                    <% } %>
-                    </th>
-                        <td class="col-5 tasktext"><a href="/task/showtask/<%= task.ID %>" ><%= task.Task %></a></td>
-                        <td class="text-center <%= Prioritycolor(task.Priority) %>"><i class="fas fa-<%= Priorityicon(task.Priority) %>"></i> <%= Priority(task.Priority)%></td>
-                        <td class="text-center" ><i class="fas fa-calendar-alt"> </i> <%= Date(task.Date) %></td>
-                    <td >
-                    <div class="d-flex pl-3">
 
-                    <%= if (task.Complete == false) { %>
-
-                    <%= if (user.Rol == "admin") { %>
-                        <a class=" text-dark" href="/task/edit/<%= task.ID %>" ><i class="fas fa-pencil-alt"></i></a>
-                        <% } else if (user.Rol == "user") {  %>
-                            <a class=" text-dark" href="/task/edituser/<%= task.ID %>" ><i class="fas fa-pencil-alt"></i></a>
-                        <%} %>
-                        <% } %>
-                    <a data-id="<%= task.ID %>"  id="idb" data-toggle="modal" data-target="#delete" ><i class="far fa-trash-alt text-danger" ></i></a>
-                    </div>
-                    </td>
-                </tr>
-            </tbody>
+    <table>
+      <%= partial("flashs/flash.plush.html") %>
+      <thead>
+          <tr>
+            <th scope="col" class="col-1 p-0">Status</th>
+            <th scope="col">Task</th>
+            <th scope="col">Priority</th>
+            <th scope="col">Complete by</th>
+            <th class="pl-4" id="action" scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for(task) in tasks { %>
+          <tr>
+            <td data-label="Status">
+              <%= form_for(task, {action: taskUpdatecompleteTaskIDPath({task_id: task.ID}), method: "PUT", class: "form"}) { %>
+                <%= if (task.Complete == false) { %>
+                    <button type="submit" data-method="PUT" class="btn my-0 py-0">
+                    <i class="far fa-check-circle" title="Click here to activate the task"></i>
+                    </button>
+            <% } else if (task.Complete == true ) { %>
+                    <button type="submit" data-method="PUT" class="btn my-0 py-0 text-danger">
+                    <i class="far fa-times-circle" title="Click here to desactive the task"></i>
+                    </button>
+                <% } %>
             <% } %>
-        </table>
+            </td>
+            <td data-label="Task">
+              <a href="/task/showtask/<%= task.ID %>" ><%= task.Task %></a>
+            </td>
+            <td data-label="Priority" ><i class="fas fa-<%= Priorityicon(task.Priority) %> <%= Prioritycolor(task.Priority) %> "></i> <%= Priority(task.Priority)%></td>
+            <td data-label="Complete">
+              <i class="fas fa-calendar-alt"> </i> <%= Date(task.Date) %>
+            </td>
+            <td data-label="Actions">
+              <%= if (task.Complete == false) { %>
+
+                <%= if (user.Rol == "admin") { %>
+                    <a class=" text-dark" href="/task/edit/<%= task.ID %>" ><i class="fas fa-pencil-alt"></i></a>
+                    <% } else if (user.Rol == "user") {  %>
+                        <a class=" text-dark" href="/task/edituser/<%= task.ID %>" ><i class="fas fa-pencil-alt"></i></a>
+                    <%} %>
+                    <% } %>
+                <a data-id="<%= task.ID %>"  id="idb" data-toggle="modal" data-target="#delete" ><i class="far fa-trash-alt text-danger" ></i></a>
+            </td>
+          </tr>
+        </tbody>
+        <% } %>
+      </table>
     </div>
-    <div class="d-flex justify-content-center">
-        <%= paginator(taskspaginator)%>
-    </div>
+    <div class="d-flex justify-content-center ">
+      <%= paginator(taskspaginator)%>
+  </div>
 </section>
 
 
 <section>
 <a data-toggle="modal" data-target="#delete"></a>
-<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">

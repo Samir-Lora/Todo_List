@@ -1,28 +1,46 @@
 
 <section>
-  <nav class="navbar navbar-light text-white nav">
-      <div class="nav-item d-flex">
-          <a href="/tasks" class="navbar-brand text-white h ml-5 mr-5">ToDo list</a>
-          <div class="ml-3 border-left border-white"></div>
-      </div>
-      <div class="d-flex flex-column ml-5">
-      <p class="incomplete"> <i class="fas fa-tasks"></i> <%= len %> Incompleted Tasks</p>
-          <p class="font-weight-ligh date" id="date"><i class="far fa-clock"></i> <%= datenow %></p>
-      </div>
+  <nav class="navbar navbar-expand-lg nav">
+    <div class="nav-item d-flex justify-content-between ">
+    <a href="/tasks" class="navbar-brand text-white h ml-4 mr-5">ToDo list</a>
+    <div class="ml-3 border-left border-white collapse navbar-collapse text-light" ></div>
+    </div>
+    <button class="navbar-toggler collapsed " type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="icon-bar top-bar bg-white"></span>
+      <span class="icon-bar middle-bar bg-white"></span>
+      <span class="icon-bar button-bar bg-white"></span>
 
-      <div class="d-flex ml-auto mr-5">
-          <div class="nav-item align-items-center"><a href="/tasks?complete=false" class="btn text-light <%=  SelectedFilter(params["complete"], "true")  %>"> Incompleted Task</a>
+    </button>
+    <div class="collapse navbar-collapse justify-content-between " id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active ">
+          <div class="d-flex flex-column ml-4">
+            <%= if (rol == "admin" || rol == "user" ) { %>
+            <p class="incomplete text-white"> <i class="fas fa-tasks"></i> <%= len %> Incompleted Tasks</p>
+            <%} %>
+            <p class="font-weight-ligh text-white date" id="date"><i class="far fa-clock"></i> <%= datenow %></p>
           </div>
-          <div class="nav-item"><a href="/tasks?complete=true" class="btn text-light <%=  SelectedFilter(params["complete"], "false")  %>">Completed Task</a></div>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-2 p-1 ">
+        <li class="nav-item">
+          <%= if (rol == "admin" || rol == "user" ) { %>
+          <a href="/tasks?complete=false" class="btn text-light <%=  SelectedFilter(params["complete"], "true")  %>"> Incompleted Task</a>
+         </li>
+         <li class="nav-item">
+          <a href="/tasks?complete=true" class="btn text-light <%=  SelectedFilter(params["complete"], "false")  %>">Completed Task</a>
+         </li>
+         <%} %>
+         <li class="nav-item">
           <%= if (rol == "admin") { %>
-          <div class="nav-item"><a href="/users" class="btn text-light" >Users</a></div>
+            <div class="nav-item"><a href="/users" class="btn text-light" >Users</a></div>
           <%} %>
-           <div class="btn-group">
-              <%= if (current_user) { %>
-                <a href="/user/showuser/<%= user.ID %>" ><button type="button" class="btn btn-white text-white text-capitalize"><i class="fas fa-user-tie"></i>ㅤ<%= current_user.Name %></button></a>
-              <button type="button" class="btn btn-white text-white dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              </button>
-              <div class="dropdown-menu">
+          </li>
+          <li class="nav-item dropdown mr-4 ">
+            <%= if (current_user) { %>
+            <a href="/user/showuser/<%= user.ID %>" ><button type="button" class="btn btn-white text-white text-capitalize "><i class="fas fa-user-tie"></i>ㅤ<%= current_user.Name %></button></a>
+            <button type="button" class="btn text-white dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+            <div class="dropdown-menu dropdown-menu-right text-center">
               <%= linkTo(userUpdatePasswordPath()){ %> <div class="nav-item align-items-center btn text-dark">Change Password</div><% } %>
                 <%= linkTo(logoutPath(), {data-method: "DELETE"}){ %> <div class="nav-item align-items-center btn text-dark">Sign Out</div><% } %>
                 <% } else { %>
@@ -30,7 +48,10 @@
                   <%= linkTo(newUserPath()){ %><div class="nav-item align-items-center btn text-light">Register</div><% } %>
                 <% } %>
             </div>
-          </div>
+            </div>
+        </li>
+      </ul>
+
     </div>
   </nav>
 </section>

@@ -19,47 +19,48 @@
 </section>
 
 <section>
-    <div class="mx-5">
-    <%= partial("flashs/flash.plush.html") %>
-        <table class="table table-hover">
-            <thead class="thead text-white">
-                <tr>
-                    <th scope="col" class="col-1 p-0"></th>
-                    <th scope="col">User</th>
-                    <th class="text-center" scope="col">Email</th>
-                    <th class="pl-4" id="action" scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            <%= for(user) in users { %>
-                <tr>
-                    <th class="text-center" scope="row">
-                        <%= form_for(user, {action: userUpdateactiveUserIDPath({user_id: user.ID}), method: "PUT", class: "form"}) { %>
-                            <%= if (user.Active == "invited") { %>
-                            <i class="fas fa-user-edit text-primary" title="User Invited"></i>
-                            <% } %>
-                            <%= if (user.Active == "inactive") { %>
-                                <button type="submit" data-method="PUT" class="btn my-0 py-0 text-danger">
-                                    <i class="fas fa-toggle-off" title="Click here to activate the user"></i>
-                                </button>
-                        <% } else if (user.Active == "active") { %>
-                                <button  data-id="<%= user.ID %>" id="modalactive" data-toggle="modal" data-target="#inactive" type="button" class="btn my-0 py-0 text-success">
-                                    <i class="fas fa-toggle-on" title="Click here to desactive the user" ></i>
-                                </button>
-                            <% } %>
-                        <% } %>
-                        </th>
-                        <td class="col-5 usertext"><a href="/user/showuser/<%= user.ID %>" > <i class="fas fa-user-tie"></i>ㅤ<%= user.Name %> <%= user.LastName %> </a></td>
-                        <td class="text-center" ><%= user.Email %></td>
-                    <td >
-                    <div class="d-flex pl-3">
-                        <a class=" text-dark" href="/user/edit/<%= user.ID %>" ><i class="fas fa-pencil-alt"></i></a>
-                    <a data-id="<%= user.ID %>"  id="modaluser" data-toggle="modal" data-target="#delete" ><i class="far fa-trash-alt text-danger" ></i></a>
-                    </div>
-                    </td>
-                </tr>
-            </tbody>
-            <% } %>
+    <div class="mx-5 mb-4">
+        <%= partial("flashs/flash.plush.html") %>
+        <table>
+          <thead>
+            <tr>
+              <th class="col-1" scope="col"></th>
+              <th class="text-left pl-4" scope="col">User</th>
+              <th scope="col">Email</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <%= for(user) in users { %>
+          <tbody>
+            <tr>
+              <td data-label="Status">
+                <%= form_for(user, {action: userUpdateactiveUserIDPath({user_id: user.ID}), method: "PUT", class: "form"}) { %>
+                  <%= if (user.Active == "invited") { %>
+                  <i class="fas fa-user-edit text-primary" title="User Invited"></i>
+                  <% } %>
+                  <%= if (user.Active == "inactive") { %>
+                      <button type="submit" data-method="PUT" class="text-danger border-0 bg-light ">
+                          <i class="fas fa-toggle-off" title="Click here to activate the user"></i>
+                      </button>
+              <% } else if (user.Active == "active") { %>
+                      <button  data-id="<%= user.ID %>" id="modalactive" data-toggle="modal" data-target="#inactive" type="button" class="border-0 bg-light text-success">
+                          <i class="fas fa-toggle-on" title="Click here to desactive the user" ></i>
+                      </button>
+                  <% } %>
+              <% } %>
+              </td>
+              <td data-label="User">
+                <div class="text-lg-left">
+                  <a href="/user/showuser/<%= user.ID %>" > <i class="fas fa-user-tie"></i>ㅤ<%= user.Name %> <%= user.LastName %> </a></td>
+                </div>
+              <td class="text-truncate" data-label="Email"><%= user.Email %></td>
+              <td data-label="Actions">
+                <a class=" text-dark" href="/user/edit/<%= user.ID %>" ><i class="fas fa-pencil-alt"></i></a>
+                <a data-id="<%= user.ID %>"  id="modaluser" data-toggle="modal" data-target="#delete" ><i class="far fa-trash-alt text-danger" ></i></a>
+              </td>
+            </tr>
+          </tbody>
+          <% } %>
         </table>
     </div>
     <div class="d-flex justify-content-center">
